@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="br.com.sportcourt.controller.LoginController"
+      alignment="CENTER"
+      spacing="12">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="SportCourt" style="-fx-font-size: 22px;"/>
+
+    <TextField fx:id="txtUsername" promptText="Usuário"/>
+    <PasswordField fx:id="txtPassword" promptText="Senha"/>
+
+    <Button text="Entrar" onAction="#onLoginClick"/>
+</VBox>

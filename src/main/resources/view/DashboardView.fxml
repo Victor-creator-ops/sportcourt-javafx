@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="br.com.sportcourt.controller.DashboardController">
+
+    <top>
+        <ToolBar>
+            <Button text="Quadras" onAction="#onQuadras"/>
+            <Button text="Reservas" onAction="#onReservas"/>
+            <Button text="Produtos" onAction="#onProdutos"/>
+            <Button text="Comandas" onAction="#onComandas"/>
+            <Button text="Financeiro" onAction="#onFinanceiro"/>
+        </ToolBar>
+    </top>
+
+    <center>
+        <Label text="Bem-vindo ao SportCourt" style="-fx-font-size: 24px;"/>
+    </center>
+
+</BorderPane>
