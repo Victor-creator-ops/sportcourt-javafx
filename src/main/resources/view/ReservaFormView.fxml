@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.DatePicker?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="br.com.sportcourt.controller.ReservaFormController"
+      spacing="12"
+      alignment="TOP_CENTER"
+      style="-fx-padding: 20;">
+
+    <Label text="Reserva" style="-fx-font-size: 22px;"/>
+
+    <GridPane hgap="10" vgap="10">
+
+        <Label text="Quadra ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtQuadraId" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Cliente:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtCliente" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Data:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Hora início:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtHoraInicio" promptText="HH:mm" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Hora fim:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtHoraFim" promptText="HH:mm" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Status:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="comboStatus" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+    </GridPane>
+
+    <HBox spacing="10">
+        <Button text="Salvar" onAction="#onSalvar"/>
+        <Button text="Cancelar" onAction="#onCancelar"/>
+    </HBox>
+
+</VBox>
