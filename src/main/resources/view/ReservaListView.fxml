@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="br.com.sportcourt.controller.ReservaListController"
+      spacing="10"
+      alignment="CENTER"
+      style="-fx-padding: 20;">
+
+    <TableView fx:id="tableReservas" prefWidth="750">
+
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="40"/>
+            <TableColumn fx:id="colQuadra" text="Quadra ID" prefWidth="80"/>
+            <TableColumn fx:id="colCliente" text="Cliente" prefWidth="150"/>
+            <TableColumn fx:id="colData" text="Data" prefWidth="100"/>
+            <TableColumn fx:id="colInicio" text="Início" prefWidth="80"/>
+            <TableColumn fx:id="colFim" text="Fim" prefWidth="80"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+        </columns>
+
+    </TableView>
+
+    <HBox spacing="10">
+        <Button text="Nova Reserva" onAction="#onCadastrar"/>
+        <Button text="Editar" onAction="#onEditar"/>
+        <Button text="Excluir" onAction="#onExcluir"/>
+    </HBox>
+
+</VBox>
