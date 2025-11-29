@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="br.com.sportcourt.controller.ItemComandaController"
+      spacing="10"
+      style="-fx-padding:20;">
+
+    <Label text="Itens da Comanda" style="-fx-font-size:20px;"/>
+
+    <TableView fx:id="tableItens" prefWidth="600">
+        <columns>
+            <TableColumn fx:id="colProduto" text="Produto ID" prefWidth="100"/>
+            <TableColumn fx:id="colQtd" text="Qtd" prefWidth="80"/>
+            <TableColumn fx:id="colUnit" text="Unitário" prefWidth="120"/>
+            <TableColumn fx:id="colTotal" text="Total" prefWidth="120"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <TextField fx:id="txtProdutoId" promptText="Produto ID"/>
+        <TextField fx:id="txtQuantidade" promptText="Qtd"/>
+        <Button text="Adicionar" onAction="#onAdicionar"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <Button text="Remover Item" onAction="#onRemover"/>
+        <Button text="Fechar" onAction="#onFechar"/>
+    </HBox>
+
+</VBox>
