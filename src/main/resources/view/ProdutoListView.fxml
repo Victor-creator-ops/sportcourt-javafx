@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="br.com.sportcourt.controller.ProdutoListController"
+      spacing="10"
+      style="-fx-padding:20;"
+      alignment="CENTER">
+
+    <TableView fx:id="tableProdutos" prefWidth="650">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colNome" text="Nome" prefWidth="150"/>
+            <TableColumn fx:id="colPreco" text="Preço" prefWidth="100"/>
+            <TableColumn fx:id="colCategoria" text="Categoria" prefWidth="150"/>
+            <TableColumn fx:id="colAtivo" text="Ativo" prefWidth="80"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <Button text="Novo" onAction="#onCadastrar"/>
+        <Button text="Editar" onAction="#onEditar"/>
+        <Button text="Excluir" onAction="#onExcluir"/>
+    </HBox>
+
+</VBox>
