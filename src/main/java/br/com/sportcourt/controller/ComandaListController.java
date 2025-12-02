@@ -7,36 +7,56 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-public class ComandaListController {
+public class ComandaListController extends BaseController {
 
-    @FXML private TableView<Comanda> tableComandas;
-    @FXML private TableColumn<Comanda, Integer> colId;
-    @FXML private TableColumn<Comanda, String> colReserva;
-    @FXML private TableColumn<Comanda, Double> colTotal;
-    @FXML private TableColumn<Comanda, String> colStatus;
+    @FXML
+    private TableView<Comanda> tableComandas;
+    @FXML
+    private TableColumn<Comanda, Integer> colId;
+    @FXML
+    private TableColumn<Comanda, String> colReserva;
+    @FXML
+    private TableColumn<Comanda, Double> colTotal;
+    @FXML
+    private TableColumn<Comanda, String> colStatus;
 
     private final ComandaService service = new ComandaService();
 
     @FXML
     public void initialize() {
-        colId.setCellValueFactory(c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId()).asObject());
+        configurarColunas();
+        carregarDados();
+    }
+
+    private void configurarColunas() {
+        colId.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId())
+                        .asObject());
 
         colReserva.setCellValueFactory(c -> {
             Integer r = c.getValue().getReservaId();
-            return new javafx.beans.property.SimpleStringProperty(r == null ? "-" : String.valueOf(r));
+            return new javafx.beans.property.SimpleStringProperty(
+                    r == null ? "-" : String.valueOf(r));
         });
 
-        colTotal.setCellValueFactory(c -> new javafx.beans.property.SimpleDoubleProperty(c.getValue().getTotal()).asObject());
-        colStatus.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getStatus()));
-
-        carregarTabela();
+        colTotal.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleDoubleProperty(c.getValue().getTotal())
+                        .asObject());
+        colStatus.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getStatus()));
     }
 
-    private void carregarTabela() {
-        tableComandas.setItems(FXCollections.observableArrayList(service.listar()));
+    private void carregarDados() {
+        try {
+            tableComandas.setItems(FXCollections.observableArrayList(service.listar()));
+        } catch (Exception e) {
+            showError("Erro ao carregar comandas: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -48,10 +68,11 @@ public class ComandaListController {
             c.setStatus("ABERTA");
 
             service.salvar(c);
-            carregarTabela();
+            carregarDados();
+            showInfo("Nova comanda criada!");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Erro ao criar comanda: " + e.getMessage());
         }
     }
 
@@ -59,7 +80,7 @@ public class ComandaListController {
     public void onAbrirItens() {
         Comanda c = tableComandas.getSelectionModel().getSelectedItem();
         if (c == null) {
-            new Alert(Alert.AlertType.WARNING, "Selecione uma comanda").show();
+            showWarning("Selecione uma comanda");
             return;
         }
 
@@ -68,7 +89,8 @@ public class ComandaListController {
 
     private void abrirTelaItens(Comanda c) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ItemComandaView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/br/com/sportcourt/view/ItemComandaView.fxml"));
             Parent root = loader.load();
 
             ItemComandaController controller = loader.getController();
@@ -79,10 +101,10 @@ public class ComandaListController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            carregarTabela();
+            carregarDados();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Erro ao abrir tela de itens: " + e.getMessage());
         }
     }
 
@@ -90,23 +112,35 @@ public class ComandaListController {
     public void onFechar() {
         Comanda c = tableComandas.getSelectionModel().getSelectedItem();
         if (c == null) {
-            new Alert(Alert.AlertType.WARNING, "Selecione uma comanda").show();
+            showWarning("Selecione uma comanda");
             return;
         }
 
         service.fecharComanda(c);
-        carregarTabela();
+        carregarDados();
+        showInfo("Comanda #" + c.getId() + " fechada!");
     }
 
     @FXML
     public void onExcluir() {
         Comanda c = tableComandas.getSelectionModel().getSelectedItem();
         if (c == null) {
-            new Alert(Alert.AlertType.WARNING, "Selecione uma comanda").show();
+            showWarning("Selecione uma comanda");
             return;
         }
 
-        service.remover(c.getId());
-        carregarTabela();
+        if (confirmAction("Confirmar Exclusão",
+                "Deseja realmente excluir a comanda #" + c.getId() + "?")) {
+
+            service.remover(c.getId());
+            carregarDados();
+            showInfo("Comanda excluída!");
+        }
+    }
+
+    @FXML
+    public void onAtualizar() {
+        carregarDados();
+        showInfo("Dados atualizados!");
     }
 }

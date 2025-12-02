@@ -7,17 +7,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-public class ReservaListController {
+import java.time.format.DateTimeFormatter;
+
+public class ReservaListController extends BaseController {
 
     @FXML
     private TableView<Reserva> tableReservas;
     @FXML
     private TableColumn<Reserva, Integer> colId;
     @FXML
-    private TableColumn<Reserva, Integer> colQuadra;
+    private TableColumn<Reserva, String> colQuadra;
     @FXML
     private TableColumn<Reserva, String> colCliente;
     @FXML
@@ -30,31 +33,44 @@ public class ReservaListController {
     private TableColumn<Reserva, String> colStatus;
 
     private final ReservaService service = new ReservaService();
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @FXML
     public void initialize() {
+        configurarColunas();
+        carregarDados();
+    }
+
+    private void configurarColunas() {
         colId.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId())
                         .asObject());
+
         colQuadra.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getQuadraId())
-                        .asObject());
+                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getQuadraId()));
+
         colCliente.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getClienteNome()));
+
         colData.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
-                c.getValue().getData().toString()));
+                c.getValue().getData().format(dateFormatter)));
+
         colInicio.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getHoraInicio().toString()));
+
         colFim.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
                 c.getValue().getHoraFim().toString()));
+
         colStatus.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getStatus()));
-
-        carregar();
     }
 
-    private void carregar() {
-        tableReservas.setItems(FXCollections.observableArrayList(service.listar()));
+    private void carregarDados() {
+        try {
+            tableReservas.setItems(FXCollections.observableArrayList(service.listar()));
+        } catch (Exception e) {
+            showError("Erro ao carregar reservas: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -64,41 +80,60 @@ public class ReservaListController {
 
     @FXML
     public void onEditar() {
-        Reserva r = tableReservas.getSelectionModel().getSelectedItem();
-        if (r == null) {
-            new Alert(Alert.AlertType.WARNING, "Selecione uma reserva").show();
+        Reserva reserva = tableReservas.getSelectionModel().getSelectedItem();
+        if (reserva == null) {
+            showWarning("Selecione uma reserva para editar!");
             return;
         }
-        abrirFormulario(r);
+        abrirFormulario(reserva);
     }
 
     @FXML
     public void onExcluir() {
-        Reserva r = tableReservas.getSelectionModel().getSelectedItem();
-        if (r != null) {
-            service.remover(r.getId());
-            carregar();
+        Reserva reserva = tableReservas.getSelectionModel().getSelectedItem();
+        if (reserva == null) {
+            showWarning("Selecione uma reserva para excluir!");
+            return;
+        }
+
+        if (confirmAction("Confirmar Exclusão", "Deseja realmente excluir a reserva #"
+                + reserva.getId() + " do cliente " + reserva.getClienteNome() + "?")) {
+
+            try {
+                service.remover(reserva.getId());
+                showInfo("Reserva excluída com sucesso!");
+                carregarDados();
+            } catch (Exception e) {
+                showError("Erro ao excluir reserva: " + e.getMessage());
+            }
         }
     }
 
-    private void abrirFormulario(Reserva r) {
+    @FXML
+    public void onAtualizar() {
+        carregarDados();
+        showInfo("Dados atualizados!");
+    }
+
+    private void abrirFormulario(Reserva reserva) {
         try {
-            FXMLLoader loader =
-                    new FXMLLoader(getClass().getResource("/view/ReservaFormView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/br/com/sportcourt/view/ReservaFormView.fxml"));
             Parent root = loader.load();
 
             ReservaFormController controller = loader.getController();
-            controller.setReserva(r);
+            controller.setReserva(reserva);
 
             Stage stage = new Stage();
+            stage.setTitle(reserva == null ? "Nova Reserva" : "Editar Reserva");
             stage.setScene(new Scene(root));
-            stage.setTitle(r == null ? "Nova Reserva" : "Editar Reserva");
+            stage.setResizable(false);
             stage.showAndWait();
 
-            carregar();
+            carregarDados();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Erro ao abrir formulário: " + e.getMessage());
         }
     }
 }

@@ -3,9 +3,9 @@ package br.com.sportcourt.model;
 public class Comanda {
 
     private int id;
-    private Integer reservaId; // pode ser null
+    private Integer reservaId;
     private double total;
-    private String status; // ABERTA, FECHADA
+    private String status;
 
     public Comanda() {}
 
@@ -16,15 +16,35 @@ public class Comanda {
         this.status = status;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public Integer getReservaId() { return reservaId; }
-    public void setReservaId(Integer reservaId) { this.reservaId = reservaId; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public double getTotal() { return total; }
-    public void setTotal(double total) { this.total = total; }
+    public Integer getReservaId() {
+        return reservaId;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setReservaId(Integer reservaId) {
+        this.reservaId = reservaId;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

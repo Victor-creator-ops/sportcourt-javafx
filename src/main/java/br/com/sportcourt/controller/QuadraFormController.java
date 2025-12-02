@@ -3,77 +3,103 @@ package br.com.sportcourt.controller;
 import br.com.sportcourt.model.Quadra;
 import br.com.sportcourt.service.QuadraService;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class QuadraFormController {
+public class QuadraFormController extends BaseController {
 
     @FXML
-    private TextField txtNome;
+    private TextField txtCodigo;
     @FXML
     private TextField txtTipo;
     @FXML
-    private TextField txtValorHora;
+    private TextField txtValor;
     @FXML
-    private ComboBox<String> comboStatus;
+    private ComboBox<String> cbStatus;
 
+    private QuadraService service = new QuadraService();
     private Quadra quadraEditando;
-    private final QuadraService service = new QuadraService();
+    private boolean isEditMode = false;
 
     @FXML
     public void initialize() {
-        comboStatus.getItems().addAll("DISPONIVEL", "MANUTENCAO", "INDISPONIVEL");
+        cbStatus.getItems().addAll("Disponível", "Indisponível");
+        cbStatus.getSelectionModel().selectFirst();
     }
 
-    public void setQuadra(Quadra q) {
-        quadraEditando = q;
+    public void setQuadraParaEdicao(Quadra quadra) {
+        if (quadra != null) {
+            this.quadraEditando = quadra;
+            this.isEditMode = true;
 
-        if (q != null) {
-            txtNome.setText(q.getNome());
-            txtTipo.setText(q.getTipo());
-            txtValorHora.setText(String.valueOf(q.getValorHora()));
-            comboStatus.setValue(q.getStatus());
+            txtCodigo.setText(quadra.getId());
+            txtTipo.setText(quadra.getTipo());
+            txtValor.setText(String.valueOf(quadra.getValorHora()));
+            cbStatus.setValue(quadra.getDisponivel() ? "Disponível" : "Indisponível");
+
+            txtCodigo.setDisable(true);
         }
     }
 
     @FXML
-    public void onSalvar() {
+    private void onSalvar() {
         try {
-            String nome = txtNome.getText();
-            String tipo = txtTipo.getText();
-            double valor = Double.parseDouble(txtValorHora.getText());
-            String status = comboStatus.getValue();
-
-            if (nome.isEmpty() || tipo.isEmpty() || status == null) {
-                new Alert(Alert.AlertType.ERROR, "Preencha tudo certinho").show();
+            if (txtCodigo.getText().trim().isEmpty()) {
+                showError("Código da quadra é obrigatório!");
                 return;
             }
 
-            if (quadraEditando == null) {
-                quadraEditando = new Quadra();
+            if (txtTipo.getText().trim().isEmpty()) {
+                showError("Tipo da quadra é obrigatório!");
+                return;
             }
 
-            quadraEditando.setNome(nome);
-            quadraEditando.setTipo(tipo);
-            quadraEditando.setValorHora(valor);
-            quadraEditando.setStatus(status);
+            double valor;
+            try {
+                valor = Double.parseDouble(txtValor.getText());
+                if (valor <= 0) {
+                    showError("Valor por hora deve ser maior que zero!");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showError("Valor por hora inválido!");
+                return;
+            }
 
-            service.salvar(quadraEditando);
-            new Alert(Alert.AlertType.INFORMATION, "Salvo!").show();
-            fechar();
+            Quadra quadra;
+            if (isEditMode) {
+                quadra = quadraEditando;
+            } else {
+                quadra = new Quadra(txtCodigo.getText().trim(), txtTipo.getText().trim(), valor,
+                        cbStatus.getValue().equals("Disponível"));
+            }
+
+            quadra.setTipo(txtTipo.getText().trim());
+            quadra.setValorHora(valor);
+            quadra.setDisponivel(cbStatus.getValue().equals("Disponível"));
+
+            service.salvar(quadra);
+
+            showInfo(isEditMode ? "Quadra atualizada com sucesso!"
+                    : "Quadra cadastrada com sucesso!");
+            fecharJanela();
 
         } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, "Valor inválido").show();
+            showError("Erro ao salvar quadra: " + e.getMessage());
         }
     }
 
     @FXML
-    public void onCancelar() {
-        fechar();
+    private void onCancelar() {
+        if (confirmAction("Cancelar", "Deseja realmente cancelar? As alterações serão perdidas.")) {
+            fecharJanela();
+        }
     }
 
-    private void fechar() {
-        Stage s = (Stage) txtNome.getScene().getWindow();
-        s.close();
+    private void fecharJanela() {
+        Stage stage = (Stage) txtCodigo.getScene().getWindow();
+        stage.close();
     }
 }

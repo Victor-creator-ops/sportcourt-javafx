@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="br.com.sportcourt.controller.LoginController"
+           style="-fx-background-color: linear-gradient(to bottom right, #3498db, #2c3e50);">
+
+    <VBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-background-radius: 15; 
+          -fx-padding: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 0);"
+          maxWidth="400">
+        
+        <!-- Logo/Título -->
+        <VBox alignment="CENTER" spacing="5">
+            <Label text="🏸" style="-fx-font-size: 48px;"/>
+            <Label text="SportCourt" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label text="Sistema de Gestão" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+        </VBox>
+        
+        <!-- Formulário de Login -->
+        <VBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 20 0 0 0;">
+            <Label text="Usuário" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <TextField fx:id="txtUsuario" 
+                       promptText="Digite seu usuário"
+                       style="-fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 14px;"/>
+            
+            <Label text="Senha" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 10 0 0 0;"/>
+            <PasswordField fx:id="txtSenha" 
+                          promptText="Digite sua senha"
+                          style="-fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 14px;"/>
+            
+            <!-- Mensagem de erro -->
+            <Label fx:id="lblErro" 
+                   style="-fx-text-fill: #e74c3c; -fx-font-size: 12px; -fx-padding: 5 0;"
+                   wrapText="true"
+                   maxWidth="320"/>
+            
+            <!-- Botão de Login -->
+            <Button text="Entrar" 
+                    onAction="#onLogin"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 12 30;
+                           -fx-cursor: hand;"
+                    maxWidth="Infinity">
+                <padding>
+                    <Insets top="12" right="30" bottom="12" left="30"/>
+                </padding>
+            </Button>
+            
+            <!-- Link para cadastro -->
+            <HBox alignment="CENTER" style="-fx-padding: 15 0 0 0;">
+                <Label text="Não tem uma conta?" style="-fx-text-fill: #7f8c8d;"/>
+                <Button text=" Cadastre-se" 
+                        style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-weight: bold;
+                               -fx-padding: 0 0 0 5; -fx-cursor: hand;"
+                        onAction="#onCadastrar"/>
+            </HBox>
+        </VBox>
+        
+    </VBox>
+</StackPane>

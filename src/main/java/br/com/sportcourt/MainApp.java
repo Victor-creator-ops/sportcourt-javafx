@@ -10,16 +10,57 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
 
-        Scene scene = new Scene(root);
-        primaryStage.setTitle("SportCourt - Login");
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/br/com/sportcourt/view/LoginView.fxml"));
+            Parent root = loader.load();
+
+
+            Scene scene = new Scene(root);
+
+            String[] cssPaths = {"/br/com/sportcourt/view/styles.css", "/styles.css", "/app.css"};
+
+            for (String cssPath : cssPaths) {
+                try {
+                    java.net.URL cssUrl = getClass().getResource(cssPath);
+                    if (cssUrl != null) {
+                        scene.getStylesheets().add(cssUrl.toExternalForm());
+                        break;
+                    }
+                } catch (Exception e) {
+                }
+            }
+
+            primaryStage.setTitle("SportCourt - Sistema de Gestão");
+            primaryStage.setScene(scene);
+            primaryStage.setMinWidth(800);
+            primaryStage.setMinHeight(600);
+
+            primaryStage.show();
+
+
+
+        } catch (Exception e) {
+            System.err.println("ERRO CRÍTICO ao iniciar aplicação:");
+            e.printStackTrace();
+
+            javafx.scene.control.Alert alert =
+                    new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            alert.setTitle("Erro de Inicialização");
+            alert.setHeaderText("Não foi possível iniciar o sistema");
+            alert.setContentText("Detalhes: " + e.getMessage());
+            alert.showAndWait();
+
+            throw e;
+        }
     }
 
     public static void main(String[] args) {
-        launch(args);
+        try {
+            launch(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

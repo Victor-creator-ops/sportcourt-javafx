@@ -11,8 +11,8 @@ public class ItemComanda {
 
     public ItemComanda() {}
 
-    public ItemComanda(int id, int comandaId, int produtoId,
-                       int quantidade, double valorUnit, double valorTotal) {
+    public ItemComanda(int id, int comandaId, int produtoId, int quantidade, double valorUnit,
+            double valorTotal) {
         this.id = id;
         this.comandaId = comandaId;
         this.produtoId = produtoId;
@@ -21,21 +21,51 @@ public class ItemComanda {
         this.valorTotal = valorTotal;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getComandaId() { return comandaId; }
-    public void setComandaId(int comandaId) { this.comandaId = comandaId; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public int getProdutoId() { return produtoId; }
-    public void setProdutoId(int produtoId) { this.produtoId = produtoId; }
+    public int getComandaId() {
+        return comandaId;
+    }
 
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
+    public void setComandaId(int comandaId) {
+        this.comandaId = comandaId;
+    }
 
-    public double getValorUnit() { return valorUnit; }
-    public void setValorUnit(double valorUnit) { this.valorUnit = valorUnit; }
+    public int getProdutoId() {
+        return produtoId;
+    }
 
-    public double getValorTotal() { return valorTotal; }
-    public void setValorTotal(double valorTotal) { this.valorTotal = valorTotal; }
+    public void setProdutoId(int produtoId) {
+        this.produtoId = produtoId;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public double getValorUnit() {
+        return valorUnit;
+    }
+
+    public void setValorUnit(double valorUnit) {
+        this.valorUnit = valorUnit;
+    }
+
+    public double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(double valorTotal) {
+        this.valorTotal = valorTotal;
+    }
 }

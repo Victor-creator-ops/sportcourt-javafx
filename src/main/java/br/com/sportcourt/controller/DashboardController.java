@@ -2,47 +2,61 @@ package br.com.sportcourt.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.Parent;
+import javafx.scene.layout.StackPane;
 
-public class DashboardController {
-
-    @FXML
-    private BorderPane root;
+public class DashboardController extends BaseController {
 
     @FXML
-    public void onQuadras() {
-        carregarView("/view/QuadraListView.fxml");
-    }
+    private StackPane viewContainer;
 
-    @FXML
-    public void onReservas() {
-        carregarView("/view/ReservaListView.fxml");
-    }
-
-    @FXML
-    public void onProdutos() {
-        carregarView("/view/ProdutoListView.fxml");
-    }
-
-    @FXML
-    public void onComandas() {
-        carregarView("/view/ComandaListView.fxml");
-    }
-
-    @FXML
-    public void onFinanceiro() {
-        carregarView("/view/FinanceiroView.fxml");
-    }
-
-    private void carregarView(String caminho) {
+    private void carregarView(String nomeFXML) {
         try {
-            Node tela = FXMLLoader.load(getClass().getResource(caminho));
-            root.setCenter(tela);
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource("/br/com/sportcourt/view/" + nomeFXML));
+
+            Parent root = loader.load();
+            viewContainer.getChildren().setAll(root);
+
         } catch (Exception e) {
-            e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Erro ao carregar tela: " + caminho).show();
+            showError("Erro ao carregar view: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onQuadras() {
+        carregarView("QuadraListView.fxml");
+    }
+
+    @FXML
+    private void onReservas() {
+        carregarView("ReservaListView.fxml");
+    }
+
+    @FXML
+    private void onProdutos() {
+        carregarView("ProdutoListView.fxml");
+    }
+
+    @FXML
+    private void onComandas() {
+        carregarView("ComandaListView.fxml");
+    }
+
+    @FXML
+    private void onFinanceiro() {
+        carregarView("FinanceiroListView.fxml");
+    }
+
+    @FXML
+    private void onHome() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/br/com/sportcourt/view/DashboardHomeView.fxml"));
+            Parent root = loader.load();
+            viewContainer.getChildren().setAll(root);
+        } catch (Exception e) {
+            showError("Erro ao carregar dashboard: " + e.getMessage());
         }
     }
 }

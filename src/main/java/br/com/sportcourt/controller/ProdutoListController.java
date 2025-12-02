@@ -7,10 +7,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
-public class ProdutoListController {
+public class ProdutoListController extends BaseController {
 
     @FXML
     private TableView<Produto> tableProdutos;
@@ -29,21 +30,35 @@ public class ProdutoListController {
 
     @FXML
     public void initialize() {
-        colId.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId()).asObject());
-        colNome.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNome()));
-        colPreco.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleDoubleProperty(c.getValue().getPreco()).asObject());
-        colCategoria
-                .setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getCategoria()));
-        colAtivo.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().isAtivo() ? "Sim" : "Não"));
-
-        carregar();
+        configurarColunas();
+        carregarDados();
     }
 
-    private void carregar() {
-        tableProdutos.setItems(FXCollections.observableArrayList(service.listar()));
+    private void configurarColunas() {
+        colId.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getId())
+                        .asObject());
+
+        colNome.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getNome()));
+
+        colPreco.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleDoubleProperty(c.getValue().getPreco())
+                        .asObject());
+
+        colCategoria.setCellValueFactory(
+                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getCategoria()));
+
+        colAtivo.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                c.getValue().isAtivo() ? "✅ Ativo" : "❌ Inativo"));
+    }
+
+    private void carregarDados() {
+        try {
+            tableProdutos.setItems(FXCollections.observableArrayList(service.listar()));
+        } catch (Exception e) {
+            showError("Erro ao carregar produtos: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -53,40 +68,60 @@ public class ProdutoListController {
 
     @FXML
     public void onEditar() {
-        Produto p = tableProdutos.getSelectionModel().getSelectedItem();
-        if (p == null) {
-            new Alert(Alert.AlertType.WARNING, "Selecione um produto").show();
+        Produto produto = tableProdutos.getSelectionModel().getSelectedItem();
+        if (produto == null) {
+            showWarning("Selecione um produto para editar!");
             return;
         }
-        abrirFormulario(p);
+        abrirFormulario(produto);
     }
 
     @FXML
     public void onExcluir() {
-        Produto p = tableProdutos.getSelectionModel().getSelectedItem();
-        if (p != null) {
-            service.remover(p.getId());
-            carregar();
+        Produto produto = tableProdutos.getSelectionModel().getSelectedItem();
+        if (produto == null) {
+            showWarning("Selecione um produto para excluir!");
+            return;
+        }
+
+        if (confirmAction("Confirmar Exclusão",
+                "Deseja realmente excluir o produto \"" + produto.getNome() + "\"?")) {
+
+            try {
+                service.remover(produto.getId());
+                showInfo("Produto excluído com sucesso!");
+                carregarDados();
+            } catch (Exception e) {
+                showError("Erro ao excluir produto: " + e.getMessage());
+            }
         }
     }
 
-    private void abrirFormulario(Produto p) {
+    @FXML
+    public void onAtualizar() {
+        carregarDados();
+        showInfo("Dados atualizados!");
+    }
+
+    private void abrirFormulario(Produto produto) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ProdutoFormView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/br/com/sportcourt/view/ProdutoFormView.fxml"));
             Parent root = loader.load();
 
             ProdutoFormController controller = loader.getController();
-            controller.setProduto(p);
+            controller.setProduto(produto);
 
             Stage stage = new Stage();
+            stage.setTitle(produto == null ? "Novo Produto" : "Editar Produto");
             stage.setScene(new Scene(root));
-            stage.setTitle(p == null ? "Novo Produto" : "Editar Produto");
+            stage.setResizable(false);
             stage.showAndWait();
 
-            carregar();
+            carregarDados();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Erro ao abrir formulário: " + e.getMessage());
         }
     }
 }

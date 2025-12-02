@@ -6,7 +6,7 @@ import java.time.LocalTime;
 public class Reserva {
 
     private int id;
-    private int quadraId;
+    private String quadraId;
     private String clienteNome;
     private LocalDate data;
     private LocalTime horaInicio;
@@ -15,8 +15,8 @@ public class Reserva {
 
     public Reserva() {}
 
-    public Reserva(int id, int quadraId, String clienteNome, LocalDate data, LocalTime horaInicio,
-            LocalTime horaFim, String status) {
+    public Reserva(int id, String quadraId, String clienteNome, LocalDate data,
+            LocalTime horaInicio, LocalTime horaFim, String status) {
         this.id = id;
         this.quadraId = quadraId;
         this.clienteNome = clienteNome;
@@ -34,11 +34,11 @@ public class Reserva {
         this.id = id;
     }
 
-    public int getQuadraId() {
+    public String getQuadraId() {
         return quadraId;
     }
 
-    public void setQuadraId(int quadraId) {
+    public void setQuadraId(String quadraId) {
         this.quadraId = quadraId;
     }
 

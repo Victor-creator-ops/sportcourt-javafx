@@ -21,6 +21,15 @@ public class ReservaService {
         return dao.findAll();
     }
 
+    public void confirmarPagamento(Reserva r, double valor) {
+        r.setStatus("PAGA");
+        dao.update(r);
+
+        FinanceiroService fin = new FinanceiroService();
+        fin.registrarEntrada("RESERVA #" + r.getId(), valor);
+    }
+
+
     public void remover(int id) {
         dao.delete(id);
     }

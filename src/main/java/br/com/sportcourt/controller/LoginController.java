@@ -1,48 +1,93 @@
 package br.com.sportcourt.controller;
 
-import br.com.sportcourt.MainApp;
 import br.com.sportcourt.service.AuthService;
+import br.com.sportcourt.service.Session;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
-public class LoginController {
-
-    @FXML
-    private TextField txtUsername;
-    @FXML
-    private PasswordField txtPassword;
-
-    private final AuthService authService = new AuthService();
+public class LoginController extends BaseController {
 
     @FXML
-    public void onLoginClick() {
-        String user = txtUsername.getText();
-        String pass = txtPassword.getText();
+    private TextField txtUsuario;
+    @FXML
+    private PasswordField txtSenha;
+    @FXML
+    private Label lblErro;
 
-        if (authService.login(user, pass)) {
-            abrirDashboard();
-        } else {
-            new Alert(Alert.AlertType.ERROR, "Usuário ou senha inválidos.").show();
-        }
+    private AuthService auth = new AuthService();
+
+    @FXML
+    public void initialize() {
+        txtUsuario.setText("");
+        txtSenha.setText("");
+
+        txtUsuario.requestFocus();
     }
 
-    private void abrirDashboard() {
+    @FXML
+    private void onLogin() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/DashboardView.fxml"));
-            Parent root = loader.load();
+            String user = txtUsuario.getText().trim();
+            String senha = txtSenha.getText();
 
-            Stage stage = (Stage) txtUsername.getScene().getWindow();
-            stage.setTitle("SportCourt - Dashboard");
-            stage.setScene(new Scene(root));
-            stage.setResizable(true);
-            stage.show();
+            if (user.isEmpty() || senha.isEmpty()) {
+                lblErro.setText("Preencha todos os campos!");
+                lblErro.setStyle("-fx-text-fill: red;");
+                return;
+            }
+
+            var usuario = auth.autenticar(user, senha);
+
+            if (usuario != null) {
+
+                Session.setUsuarioLogado(usuario);
+
+                txtUsuario.clear();
+                txtSenha.clear();
+                lblErro.setText("");
+
+                carregarDashboard();
+
+            } else {
+                lblErro.setText("Usuário ou senha incorretos!");
+                lblErro.setStyle("-fx-text-fill: red;");
+                txtSenha.selectAll();
+                txtSenha.requestFocus();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
+            lblErro.setText("Erro no sistema. Tente novamente.");
+            lblErro.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    private void carregarDashboard() throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/br/com/sportcourt/view/DashboardView.fxml"));
+        Parent root = loader.load();
+        txtUsuario.getScene().setRoot(root);
+    }
+
+    @FXML
+    private void onCadastrar() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/br/com/sportcourt/view/CadastroView.fxml"));
+            Parent root = loader.load();
+            txtUsuario.getScene().setRoot(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+            lblErro.setText("Erro ao abrir cadastro.");
+        }
+    }
+
+    @FXML
+    private void onEnterPressed() {
+        onLogin();
     }
 }

@@ -1,17 +1,20 @@
 package br.com.sportcourt.controller;
 
 import br.com.sportcourt.model.Reserva;
+import br.com.sportcourt.model.Quadra;
+import br.com.sportcourt.service.QuadraService;
 import br.com.sportcourt.service.ReservaService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class ReservaFormController {
+public class ReservaFormController extends BaseController {
 
     @FXML
-    private TextField txtQuadraId;
+    private ComboBox<Quadra> comboQuadra;
     @FXML
     private TextField txtCliente;
     @FXML
@@ -25,17 +28,57 @@ public class ReservaFormController {
 
     private Reserva reservaEditando;
     private final ReservaService service = new ReservaService();
+    private final QuadraService quadraService = new QuadraService();
 
     @FXML
     public void initialize() {
-        comboStatus.getItems().addAll("AGENDADO", "CANCELADO", "FINALIZADO");
+        comboStatus.getItems().addAll("AGENDADO", "CONFIRMADO", "CANCELADO", "FINALIZADO");
+        comboStatus.getSelectionModel().selectFirst();
+
+        datePicker.setValue(LocalDate.now());
+
+        carregarQuadras();
+    }
+
+    private void carregarQuadras() {
+        var quadras = quadraService.listar();
+        comboQuadra.getItems().setAll(quadras);
+
+        comboQuadra.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(Quadra item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getId() + " - " + item.getTipo());
+                }
+            }
+        });
+        comboQuadra.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Quadra item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getId() + " - " + item.getTipo());
+                }
+            }
+        });
+
+        if (!quadras.isEmpty()) {
+            comboQuadra.getSelectionModel().selectFirst();
+        } else {
+            showWarning("Cadastre uma quadra antes de criar reservas.");
+        }
     }
 
     public void setReserva(Reserva r) {
         reservaEditando = r;
 
         if (r != null) {
-            txtQuadraId.setText(String.valueOf(r.getQuadraId()));
+            comboQuadra.getSelectionModel().select(quadraService.buscarPorId(r.getQuadraId()));
             txtCliente.setText(r.getClienteNome());
             datePicker.setValue(r.getData());
             txtHoraInicio.setText(r.getHoraInicio().toString());
@@ -47,17 +90,45 @@ public class ReservaFormController {
     @FXML
     public void onSalvar() {
         try {
-            int quadraId = Integer.parseInt(txtQuadraId.getText());
-            String cliente = txtCliente.getText();
-            var data = datePicker.getValue();
-            LocalTime inicio = LocalTime.parse(txtHoraInicio.getText());
-            LocalTime fim = LocalTime.parse(txtHoraFim.getText());
+            Quadra quadraSelecionada = comboQuadra.getValue();
+            if (quadraSelecionada == null) {
+                showError("Selecione uma quadra válida!");
+                return;
+            }
+
+            if (txtCliente.getText().trim().isEmpty()) {
+                showError("Nome do cliente é obrigatório!");
+                return;
+            }
+
+            if (datePicker.getValue() == null) {
+                showError("Data é obrigatória!");
+                return;
+            }
+
+            LocalTime inicio, fim;
+            try {
+                inicio = LocalTime.parse(txtHoraInicio.getText());
+                fim = LocalTime.parse(txtHoraFim.getText());
+
+                if (fim.isBefore(inicio) || fim.equals(inicio)) {
+                    showError("Hora fim deve ser após a hora início!");
+                    return;
+                }
+            } catch (Exception e) {
+                showError("Formato de hora inválido! Use HH:mm (ex: 14:30)");
+                return;
+            }
+
+            String cliente = txtCliente.getText().trim();
+            LocalDate data = datePicker.getValue();
             String status = comboStatus.getValue();
 
-            if (reservaEditando == null)
+            if (reservaEditando == null) {
                 reservaEditando = new Reserva();
+            }
 
-            reservaEditando.setQuadraId(quadraId);
+            reservaEditando.setQuadraId(quadraSelecionada.getId());
             reservaEditando.setClienteNome(cliente);
             reservaEditando.setData(data);
             reservaEditando.setHoraInicio(inicio);
@@ -66,20 +137,23 @@ public class ReservaFormController {
 
             service.salvar(reservaEditando);
 
-            new Alert(Alert.AlertType.INFORMATION, "Reserva salva!").show();
-            fechar();
+            showInfo("Reserva salva com sucesso!");
+            fecharJanela();
 
         } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, "Erro ao salvar. Verifique os dados.").show();
+            showError("Erro ao salvar reserva: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @FXML
     public void onCancelar() {
-        fechar();
+        if (confirmAction("Cancelar", "Deseja realmente cancelar? As alterações serão perdidas.")) {
+            fecharJanela();
+        }
     }
 
-    private void fechar() {
+    private void fecharJanela() {
         Stage stage = (Stage) txtCliente.getScene().getWindow();
         stage.close();
     }

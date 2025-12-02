@@ -16,9 +16,10 @@ public class ReservaDAO {
                 "INSERT INTO reservas (quadra_id, cliente_nome, data, hora_inicio, hora_fim, status) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt =
+                        conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, r.getQuadraId());
+            stmt.setString(1, r.getQuadraId());
             stmt.setString(2, r.getClienteNome());
             stmt.setDate(3, Date.valueOf(r.getData()));
             stmt.setTime(4, Time.valueOf(r.getHoraInicio()));
@@ -27,21 +28,28 @@ public class ReservaDAO {
 
             stmt.executeUpdate();
 
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    r.setId(generatedKeys.getInt(1));
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Erro ao criar reserva: " + e.getMessage(), e);
         }
     }
 
     public List<Reserva> findAll() {
         List<Reserva> lista = new ArrayList<>();
-        String sql = "SELECT * FROM reservas";
+        String sql = "SELECT * FROM reservas ORDER BY data DESC, hora_inicio DESC";
 
         try (Connection conn = DatabaseConfig.getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                lista.add(new Reserva(rs.getInt("id"), rs.getInt("quadra_id"),
+                lista.add(new Reserva(rs.getInt("id"), rs.getString("quadra_id"),
                         rs.getString("cliente_nome"), rs.getDate("data").toLocalDate(),
                         rs.getTime("hora_inicio").toLocalTime(),
                         rs.getTime("hora_fim").toLocalTime(), rs.getString("status")));
@@ -49,6 +57,7 @@ public class ReservaDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar reservas: " + e.getMessage(), e);
         }
 
         return lista;
@@ -61,7 +70,7 @@ public class ReservaDAO {
         try (Connection conn = DatabaseConfig.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, r.getQuadraId());
+            stmt.setString(1, r.getQuadraId());
             stmt.setString(2, r.getClienteNome());
             stmt.setDate(3, Date.valueOf(r.getData()));
             stmt.setTime(4, Time.valueOf(r.getHoraInicio()));
@@ -73,6 +82,7 @@ public class ReservaDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Erro ao atualizar reserva: " + e.getMessage(), e);
         }
     }
 
@@ -87,6 +97,7 @@ public class ReservaDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Erro ao excluir reserva: " + e.getMessage(), e);
         }
     }
 }

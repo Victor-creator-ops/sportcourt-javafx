@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.com.sportcourt.controller.ReservaListController"
+      spacing="20"
+      style="-fx-padding: 30;">
+    
+    <Label text="📅 Reservas" 
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Button text="➕ Nova Reserva" onAction="#onCadastrar" 
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-background-radius: 8; -fx-padding: 10 20;"/>
+        
+        <Button text="✏️ Editar" onAction="#onEditar" 
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-background-radius: 8; -fx-padding: 10 20;"/>
+        
+        <Button text="🗑️ Excluir" onAction="#onExcluir" 
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-background-radius: 8; -fx-padding: 10 20;"/>
+        
+        <Region HBox.hgrow="ALWAYS"/>
+        
+        <!-- Filtros - Vamos remover o ComboBox por enquanto para simplificar -->
+        <TextField promptText="Buscar cliente..." 
+                   style="-fx-pref-width: 200; -fx-background-radius: 8; -fx-padding: 10;"/>
+        
+        <Button text="🔄 Atualizar" onAction="#onAtualizar"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-background-radius: 8; -fx-padding: 10 20;"/>
+    </HBox>
+    
+    <TableView fx:id="tableReservas" style="-fx-background-color: white;">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colQuadra" text="Quadra" prefWidth="100"/>
+            <TableColumn fx:id="colCliente" text="Cliente" prefWidth="200"/>
+            <TableColumn fx:id="colData" text="Data" prefWidth="120"/>
+            <TableColumn fx:id="colInicio" text="Início" prefWidth="100"/>
+            <TableColumn fx:id="colFim" text="Fim" prefWidth="100"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+    
+    <HBox spacing="20" alignment="CENTER_LEFT">
+        <Label text="Total de reservas:" style="-fx-font-weight: bold;"/>
+        <Label text="0" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
+    </HBox>
+    
+</VBox>

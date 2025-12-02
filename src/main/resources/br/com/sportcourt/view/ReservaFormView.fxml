@@ -15,8 +15,8 @@
 
     <GridPane hgap="10" vgap="10">
 
-        <Label text="Quadra ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtQuadraId" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Quadra:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="comboQuadra" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="200"/>
 
         <Label text="Cliente:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <TextField fx:id="txtCliente" GridPane.rowIndex="1" GridPane.columnIndex="1"/>

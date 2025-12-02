@@ -2,36 +2,24 @@ package br.com.sportcourt.model;
 
 public class Quadra {
 
-    private int id;
-    private String nome;
+    private String id;
     private String tipo;
     private double valorHora;
-    private String status;
+    private boolean disponivel;
 
-    public Quadra() {}
-
-    public Quadra(int id, String nome, String tipo, double valorHora, String status) {
+    public Quadra(String id, String tipo, double valorHora, boolean disponivel) {
         this.id = id;
-        this.nome = nome;
         this.tipo = tipo;
         this.valorHora = valorHora;
-        this.status = status;
+        this.disponivel = disponivel;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public String getTipo() {
@@ -50,11 +38,11 @@ public class Quadra {
         this.valorHora = valorHora;
     }
 
-    public String getStatus() {
-        return status;
+    public boolean getDisponivel() {
+        return disponivel;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
     }
 }

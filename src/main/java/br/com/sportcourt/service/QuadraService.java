@@ -7,21 +7,26 @@ import java.util.List;
 
 public class QuadraService {
 
-    private final QuadraDAO dao = new QuadraDAO();
-
-    public void salvar(Quadra q) {
-        if (q.getId() == 0) {
-            dao.create(q);
-        } else {
-            dao.update(q);
-        }
-    }
+    private QuadraDAO dao = new QuadraDAO();
 
     public List<Quadra> listar() {
         return dao.findAll();
     }
 
-    public void remover(int id) {
+    public Quadra buscarPorId(String id) {
+        return dao.findById(id);
+    }
+
+    public void salvar(Quadra q) {
+        Quadra existente = dao.findById(q.getId());
+        if (existente != null) {
+            dao.update(q);
+        } else {
+            dao.create(q);
+        }
+    }
+
+    public void excluir(String id) {
         dao.delete(id);
     }
 }
