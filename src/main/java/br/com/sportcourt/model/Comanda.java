@@ -4,14 +4,16 @@ public class Comanda {
 
     private int id;
     private Integer reservaId;
+    private String clienteNome;
     private double total;
     private String status;
 
     public Comanda() {}
 
-    public Comanda(int id, Integer reservaId, double total, String status) {
+    public Comanda(int id, Integer reservaId, String clienteNome, double total, String status) {
         this.id = id;
         this.reservaId = reservaId;
+        this.clienteNome = clienteNome;
         this.total = total;
         this.status = status;
     }
@@ -30,6 +32,14 @@ public class Comanda {
 
     public void setReservaId(Integer reservaId) {
         this.reservaId = reservaId;
+    }
+
+    public String getClienteNome() {
+        return clienteNome;
+    }
+
+    public void setClienteNome(String clienteNome) {
+        this.clienteNome = clienteNome;
     }
 
     public double getTotal() {

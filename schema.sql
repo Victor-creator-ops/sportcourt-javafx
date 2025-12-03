@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS produtos_bar (
 CREATE TABLE IF NOT EXISTS comandas_bar (
     id INT PRIMARY KEY AUTO_INCREMENT,
     reserva_id INT NULL,  -- Pode ser NULL
+    cliente_nome VARCHAR(100) NULL,
     total DECIMAL(10,2) DEFAULT 0.00,
     status VARCHAR(20) DEFAULT 'ABERTA',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -113,3 +114,5 @@ CREATE INDEX idx_comandas_status ON comandas_bar(status);
 
 DROP INDEX IF EXISTS idx_financeiro_data ON financeiro;
 CREATE INDEX idx_financeiro_data ON financeiro(data_hora);
+
+ALTER TABLE comandas_bar ADD COLUMN IF NOT EXISTS cliente_nome VARCHAR(100) NULL AFTER reserva_id;

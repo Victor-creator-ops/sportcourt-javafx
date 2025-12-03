@@ -2,15 +2,19 @@ package br.com.sportcourt.controller;
 
 import br.com.sportcourt.model.FinanceiroMovimento;
 import br.com.sportcourt.service.FinanceiroService;
+import br.com.sportcourt.service.Session;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class FinanceiroListController extends BaseController {
 
@@ -20,6 +24,11 @@ public class FinanceiroListController extends BaseController {
         private Label lblSaidas;
         @FXML
         private Label lblSaldo;
+
+        @FXML
+        private Button btnNovaEntrada;
+        @FXML
+        private Button btnNovaSaida;
 
         @FXML
         private TableView<FinanceiroMovimento> tableMovimentos;
@@ -40,8 +49,33 @@ public class FinanceiroListController extends BaseController {
 
         @FXML
         public void initialize() {
+                if (!podeUsarFinanceiro()) {
+                        bloquearAcesso();
+                        return;
+                }
                 configurarColunas();
                 carregarDados();
+        }
+
+        private boolean podeUsarFinanceiro() {
+                var u = Session.getUsuarioLogado();
+                return u != null && "ADMIN".equalsIgnoreCase(u.getRole());
+        }
+
+        private void bloquearAcesso() {
+                if (btnNovaEntrada != null) {
+                        btnNovaEntrada.setDisable(true);
+                }
+                if (btnNovaSaida != null) {
+                        btnNovaSaida.setDisable(true);
+                }
+                if (tableMovimentos != null) {
+                        tableMovimentos.setDisable(true);
+                }
+                if (chartFluxo != null) {
+                        chartFluxo.setDisable(true);
+                }
+                showWarning("Acesso ao financeiro restrito a administradores.");
         }
 
         private void configurarColunas() {
@@ -57,21 +91,21 @@ public class FinanceiroListController extends BaseController {
 
         private void carregarDados() {
                 try {
+                        var movimentos = service.listar();
                         tableMovimentos.setItems(
-                                        FXCollections.observableArrayList(service.listar()));
-                        carregarResumo();
-                        carregarGrafico();
+                                        FXCollections.observableArrayList(movimentos));
+                        carregarResumo(movimentos);
+                        carregarGrafico(movimentos);
                 } catch (Exception e) {
                         showError("Erro ao carregar financeiro: " + e.getMessage());
                 }
         }
 
-        private void carregarResumo() {
-                double entradas =
-                                service.listar().stream().filter(m -> m.getTipo().equals("ENTRADA"))
-                                                .mapToDouble(FinanceiroMovimento::getValor).sum();
+        private void carregarResumo(List<FinanceiroMovimento> movimentos) {
+                double entradas = movimentos.stream().filter(m -> m.getTipo().equals("ENTRADA"))
+                                .mapToDouble(FinanceiroMovimento::getValor).sum();
 
-                double saidas = service.listar().stream().filter(m -> m.getTipo().equals("SAIDA"))
+                double saidas = movimentos.stream().filter(m -> m.getTipo().equals("SAIDA"))
                                 .mapToDouble(FinanceiroMovimento::getValor).sum();
 
                 double saldo = entradas - saidas;
@@ -81,14 +115,14 @@ public class FinanceiroListController extends BaseController {
                 lblSaldo.setText(df.format(saldo));
         }
 
-        private void carregarGrafico() {
+        private void carregarGrafico(List<FinanceiroMovimento> movimentos) {
                 try {
                         chartFluxo.getData().clear();
 
                         XYChart.Series<String, Number> serie = new XYChart.Series<>();
                         serie.setName("Fluxo de Caixa");
 
-                        for (FinanceiroMovimento m : service.listar()) {
+                        for (FinanceiroMovimento m : movimentos) {
                                 serie.getData().add(new XYChart.Data<>(
                                                 m.getDataHora().toLocalDate().toString(),
                                                 m.getValor()));
@@ -102,7 +136,71 @@ public class FinanceiroListController extends BaseController {
 
         @FXML
         public void onAtualizar() {
+                if (!podeUsarFinanceiro()) {
+                        return;
+                }
                 carregarDados();
                 showInfo("Dados atualizados!");
+        }
+
+        @FXML
+        public void onNovaEntrada() {
+                registrarMovimento("ENTRADA");
+        }
+
+        @FXML
+        public void onNovaSaida() {
+                registrarMovimento("SAIDA");
+        }
+
+        private void registrarMovimento(String tipo) {
+                if (!podeUsarFinanceiro()) {
+                        showWarning("Acesso ao financeiro restrito a administradores.");
+                        return;
+                }
+
+                TextInputDialog origemDialog = new TextInputDialog();
+                origemDialog.setTitle("Novo movimento");
+                origemDialog.setHeaderText(tipo.equals("ENTRADA") ? "Registrar entrada"
+                                : "Registrar saída");
+                origemDialog.setContentText("Origem:");
+
+                var origem = origemDialog.showAndWait();
+                if (origem.isEmpty() || origem.get().isBlank()) {
+                        showWarning("Informe a origem do movimento.");
+                        return;
+                }
+
+                TextInputDialog valorDialog = new TextInputDialog();
+                valorDialog.setTitle("Valor");
+                valorDialog.setHeaderText("Informe o valor");
+                valorDialog.setContentText("Valor em R$:");
+
+                var valorStr = valorDialog.showAndWait();
+                if (valorStr.isEmpty()) {
+                        return;
+                }
+
+                double valor;
+                try {
+                        valor = Double.parseDouble(valorStr.get().replace(",", "."));
+                } catch (NumberFormatException e) {
+                        showError("Valor inválido.");
+                        return;
+                }
+
+                if (valor <= 0) {
+                        showWarning("O valor deve ser maior que zero.");
+                        return;
+                }
+
+                if (tipo.equals("ENTRADA")) {
+                        service.registrarEntrada(origem.get().trim(), valor);
+                } else {
+                        service.registrarSaida(origem.get().trim(), valor);
+                }
+
+                carregarDados();
+                showInfo("Movimento registrado.");
         }
 }

@@ -4,6 +4,7 @@ import br.com.sportcourt.service.Session;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -18,6 +19,22 @@ public class MenuController extends BaseController {
     private StackPane viewContainer;
     @FXML
     private BorderPane mainPane;
+    @FXML
+    private Button btnDashboard;
+    @FXML
+    private Button btnQuadras;
+    @FXML
+    private Button btnReservas;
+    @FXML
+    private Button btnProdutos;
+    @FXML
+    private Button btnComandas;
+    @FXML
+    private Button btnFinanceiro;
+    @FXML
+    private Button btnRelatorios;
+    @FXML
+    private Button btnConfiguracoes;
 
     @FXML
     public void initialize() {
@@ -26,6 +43,7 @@ public class MenuController extends BaseController {
             String info = String.format("%s (%s)", usuario.getNome(), usuario.getRole());
             lblUsuario.setText(info);
         }
+        aplicarPermissoes();
     }
 
     private void carregarView(String nomeFXML) {
@@ -43,18 +61,81 @@ public class MenuController extends BaseController {
         }
     }
 
+    private String getRole() {
+        var u = Session.getUsuarioLogado();
+        return u == null ? "" : u.getRole().toUpperCase();
+    }
+
+    private boolean isAtendente() {
+        return "ATENDENTE".equals(getRole());
+    }
+
+    private boolean isOperador() {
+        return "OPERADOR".equals(getRole());
+    }
+
+    private boolean isAdmin() {
+        return "ADMIN".equals(getRole());
+    }
+
+    private boolean podeVerFinanceiro() {
+        return isAdmin();
+    }
+
+    private void esconderBotao(Button b) {
+        b.setDisable(true);
+        b.setVisible(false);
+        b.setManaged(false);
+    }
+
+    private void aplicarPermissoes() {
+        if (isAtendente()) {
+            esconderBotao(btnDashboard);
+            esconderBotao(btnQuadras);
+            esconderBotao(btnReservas);
+            esconderBotao(btnProdutos);
+            esconderBotao(btnFinanceiro);
+            esconderBotao(btnRelatorios);
+            esconderBotao(btnConfiguracoes);
+            carregarView("ComandaListView.fxml");
+        } else if (isOperador()) {
+            esconderBotao(btnFinanceiro);
+            btnConfiguracoes.setDisable(true);
+        } else if (!isAdmin()) {
+            btnConfiguracoes.setDisable(true);
+        }
+    }
+
+    private boolean bloqueadoParaAtendente() {
+        if (isAtendente()) {
+            showWarning("Acesso restrito ao PDV para atendentes.");
+            carregarView("ComandaListView.fxml");
+            return true;
+        }
+        return false;
+    }
+
     @FXML
     private void onQuadras() {
+        if (bloqueadoParaAtendente()) {
+            return;
+        }
         carregarView("QuadraListView.fxml");
     }
 
     @FXML
     private void onReservas() {
+        if (bloqueadoParaAtendente()) {
+            return;
+        }
         carregarView("ReservaListView.fxml");
     }
 
     @FXML
     private void onProdutos() {
+        if (bloqueadoParaAtendente()) {
+            return;
+        }
         carregarView("ProdutoListView.fxml");
     }
 
@@ -65,11 +146,18 @@ public class MenuController extends BaseController {
 
     @FXML
     private void onFinanceiro() {
+        if (!podeVerFinanceiro()) {
+            showWarning("Apenas administradores podem acessar o financeiro.");
+            return;
+        }
         carregarView("FinanceiroListView.fxml");
     }
 
     @FXML
     private void onRelatorios() {
+        if (bloqueadoParaAtendente()) {
+            return;
+        }
         showInfo("Relatórios em desenvolvimento!");
     }
 
@@ -85,6 +173,10 @@ public class MenuController extends BaseController {
 
     @FXML
     private void onHome() {
+        if (isAtendente()) {
+            carregarView("ComandaListView.fxml");
+            return;
+        }
         try {
             Parent root = FXMLLoader
                     .load(getClass().getResource("/br/com/sportcourt/view/DashboardHomeView.fxml"));

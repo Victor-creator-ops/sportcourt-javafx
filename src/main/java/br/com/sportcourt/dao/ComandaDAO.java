@@ -10,19 +10,32 @@ import java.util.List;
 public class ComandaDAO {
 
     public void create(Comanda c) {
-        String sql = "INSERT INTO comandas_bar (reserva_id, total, status) VALUES (?, ?, ?)";
-
-        try (Connection conn = DatabaseConfig.getConnection();
-                PreparedStatement stmt =
-                        conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            boolean temCliente = colunaClienteExiste(conn);
+            String sql;
+            if (temCliente) {
+                sql = "INSERT INTO comandas_bar (reserva_id, cliente_nome, total, status) VALUES (?, ?, ?, ?)";
+            } else {
+                sql = "INSERT INTO comandas_bar (reserva_id, total, status) VALUES (?, ?, ?)";
+            }
+            PreparedStatement stmt =
+                    conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             if (c.getReservaId() == null)
                 stmt.setNull(1, Types.INTEGER);
             else
                 stmt.setInt(1, c.getReservaId());
 
-            stmt.setDouble(2, c.getTotal());
-            stmt.setString(3, c.getStatus());
+            int idx = 2;
+            if (temCliente) {
+                if (c.getClienteNome() == null || c.getClienteNome().isBlank())
+                    stmt.setNull(idx++, Types.VARCHAR);
+                else
+                    stmt.setString(idx++, c.getClienteNome());
+            }
+
+            stmt.setDouble(idx++, c.getTotal());
+            stmt.setString(idx, c.getStatus());
 
             stmt.executeUpdate();
 
@@ -46,9 +59,11 @@ public class ComandaDAO {
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
+            boolean temCliente = colunaClienteExiste(conn);
             while (rs.next()) {
                 lista.add(new Comanda(rs.getInt("id"),
                         rs.getObject("reserva_id") == null ? null : rs.getInt("reserva_id"),
+                        temCliente ? rs.getString("cliente_nome") : null,
                         rs.getDouble("total"), rs.getString("status")));
             }
 
@@ -61,19 +76,33 @@ public class ComandaDAO {
     }
 
     public boolean update(Comanda c) {
-        String sql = "UPDATE comandas_bar SET reserva_id=?, total=?, status=? WHERE id=?";
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            boolean temCliente = colunaClienteExiste(conn);
+            String sql;
+            if (temCliente) {
+                sql = "UPDATE comandas_bar SET reserva_id=?, cliente_nome=?, total=?, status=? WHERE id=?";
+            } else {
+                sql = "UPDATE comandas_bar SET reserva_id=?, total=?, status=? WHERE id=?";
+            }
 
-        try (Connection conn = DatabaseConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
             if (c.getReservaId() == null)
                 stmt.setNull(1, Types.INTEGER);
             else
                 stmt.setInt(1, c.getReservaId());
 
-            stmt.setDouble(2, c.getTotal());
-            stmt.setString(3, c.getStatus());
-            stmt.setInt(4, c.getId());
+            int idx = 2;
+            if (temCliente) {
+                if (c.getClienteNome() == null || c.getClienteNome().isBlank())
+                    stmt.setNull(idx++, Types.VARCHAR);
+                else
+                    stmt.setString(idx++, c.getClienteNome());
+            }
+
+            stmt.setDouble(idx++, c.getTotal());
+            stmt.setString(idx++, c.getStatus());
+            stmt.setInt(idx, c.getId());
 
             return stmt.executeUpdate() > 0;
 
@@ -95,5 +124,17 @@ public class ComandaDAO {
             e.printStackTrace();
             throw new RuntimeException("Erro ao excluir comanda: " + e.getMessage(), e);
         }
+    }
+
+    private boolean colunaClienteExiste(Connection conn) {
+        try (ResultSet rs = conn.getMetaData().getColumns(null, null, "comandas_bar",
+                "cliente_nome")) {
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            // ignora
+        }
+        return false;
     }
 }

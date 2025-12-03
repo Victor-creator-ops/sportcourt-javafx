@@ -86,6 +86,30 @@ public class ReservaDAO {
         }
     }
 
+    public Reserva findById(int id) {
+        String sql = "SELECT * FROM reservas WHERE id=?";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Reserva(rs.getInt("id"), rs.getString("quadra_id"),
+                        rs.getString("cliente_nome"), rs.getDate("data").toLocalDate(),
+                        rs.getTime("hora_inicio").toLocalTime(),
+                        rs.getTime("hora_fim").toLocalTime(), rs.getString("status"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar reserva: " + e.getMessage(), e);
+        }
+
+        return null;
+    }
+
     public void delete(int id) {
         String sql = "DELETE FROM reservas WHERE id=?";
 

@@ -29,6 +29,9 @@ public class ReservaService {
         fin.registrarEntrada("RESERVA #" + r.getId(), valor);
     }
 
+    public Reserva buscarPorId(int id) {
+        return dao.findById(id);
+    }
 
     public void remover(int id) {
         dao.delete(id);

@@ -39,7 +39,7 @@ public class ConfiguracoesController extends BaseController {
     @FXML
     public void initialize() {
         configurarTabela();
-        comboRole.getItems().addAll("ADMIN", "OPERADOR");
+        comboRole.getItems().addAll("ADMIN", "OPERADOR", "ATENDENTE");
         comboRole.getSelectionModel().selectFirst();
         carregarUsuarios();
         aplicarRestricaoAdmin();

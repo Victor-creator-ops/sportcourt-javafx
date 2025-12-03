@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
@@ -35,11 +36,11 @@
     </HBox>
     
     <HBox spacing="15" alignment="CENTER_LEFT">
-        <Button text="➕ Nova Entrada" 
+        <Button fx:id="btnNovaEntrada" text="➕ Nova Entrada" onAction="#onNovaEntrada"
                 style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;
                        -fx-background-radius: 8; -fx-padding: 10 20;"/>
         
-        <Button text="➖ Nova Saída" 
+        <Button fx:id="btnNovaSaida" text="➖ Nova Saída" onAction="#onNovaSaida"
                 style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;
                        -fx-background-radius: 8; -fx-padding: 10 20;"/>
         
@@ -61,5 +62,14 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
     </TableView>
+
+    <AreaChart fx:id="chartFluxo" title="Fluxo de Caixa" prefHeight="240">
+        <xAxis>
+            <CategoryAxis label="Data"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Valor"/>
+        </yAxis>
+    </AreaChart>
     
 </VBox>
