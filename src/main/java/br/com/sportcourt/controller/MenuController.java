@@ -35,6 +35,8 @@ public class MenuController extends BaseController {
     private Button btnRelatorios;
     @FXML
     private Button btnConfiguracoes;
+    @FXML
+    private Button btnMateriais;
 
     @FXML
     public void initialize() {
@@ -44,6 +46,14 @@ public class MenuController extends BaseController {
             lblUsuario.setText(info);
         }
         aplicarPermissoes();
+    }
+
+    @FXML
+    private void onMateriais() {
+        if (bloqueadoParaAtendente()) {
+            return;
+        }
+        carregarView("MaterialListView.fxml");
     }
 
     private void carregarView(String nomeFXML) {
@@ -94,6 +104,7 @@ public class MenuController extends BaseController {
             esconderBotao(btnQuadras);
             esconderBotao(btnReservas);
             esconderBotao(btnProdutos);
+            esconderBotao(btnMateriais);
             esconderBotao(btnFinanceiro);
             esconderBotao(btnRelatorios);
             esconderBotao(btnConfiguracoes);

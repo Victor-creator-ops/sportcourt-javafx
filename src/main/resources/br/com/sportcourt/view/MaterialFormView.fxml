@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.sportcourt.controller.MaterialFormController"
+            prefWidth="600" prefHeight="650">
+    
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox spacing="20" style="-fx-padding: 30;" maxWidth="550">
+                
+                <!-- Cabeçalho -->
+                <VBox spacing="10" alignment="CENTER">
+                    <Label text="🏐" style="-fx-font-size: 40px;"/>
+                    <Label text="Cadastro de Material Esportivo" 
+                           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <Label text="Preencha os dados do material" 
+                           style="-fx-text-fill: #7f8c8d;"/>
+                </VBox>
+                
+                <!-- Formulário -->
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="150" halignment="RIGHT"/>
+                        <ColumnConstraints prefWidth="350"/>
+                    </columnConstraints>
+                    
+                    <!-- Nome -->
+                    <Label text="Nome *" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="txtNome" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    
+                    <!-- Descrição -->
+                    <Label text="Descrição" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <TextArea fx:id="txtDescricao" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                             prefRowCount="3"/>
+                    
+                    <!-- Categoria -->
+                    <Label text="Categoria *" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <ComboBox fx:id="comboCategoria" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    
+                    <!-- Valor Locação -->
+                    <Label text="Valor Locação/hora *" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="txtValorLocacao" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    
+                    <!-- Valor Caução -->
+                    <Label text="Valor Caução/unidade *" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="txtValorCaucao" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    
+                    <!-- Quantidade Total -->
+                    <Label text="Quantidade Total *" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="txtQuantidadeTotal" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    
+                    <!-- Data Validade -->
+                    <Label text="Data Validade" GridPane.rowIndex="6" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <DatePicker fx:id="dateDataValidade" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    
+                    <!-- Estado -->
+                    <Label text="Estado *" GridPane.rowIndex="7" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <ComboBox fx:id="comboEstado" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                    
+                    <!-- Ativo -->
+                    <Label text="Ativo *" GridPane.rowIndex="8" GridPane.columnIndex="0"
+                           style="-fx-font-weight: bold;"/>
+                    <ComboBox fx:id="comboAtivo" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+                </GridPane>
+                
+                <!-- Observações -->
+                <VBox spacing="5">
+                    <Label text="Dica:" style="-fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+                    <Label text="• Materiais vencidos são destacados em azul na lista" 
+                           style="-fx-text-fill: #95a5a6; -fx-font-size: 12px;"/>
+                    <Label text="• Quantidade disponível é atualizada automaticamente com as locações" 
+                           style="-fx-text-fill: #95a5a6; -fx-font-size: 12px;"/>
+                </VBox>
+                
+                <!-- Botões -->
+                <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                    <Button text="💾 Salvar" onAction="#onSalvar" 
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;
+                                   -fx-background-radius: 8; -fx-padding: 10 30;"/>
+                    <Button text="❌ Cancelar" onAction="#onCancelar" 
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold;
+                                   -fx-background-radius: 8; -fx-padding: 10 30;"/>
+                </HBox>
+                
+                <!-- Rodapé -->
+                <VBox spacing="5" style="-fx-padding: 20 0 0 0;">
+                    <Separator style="-fx-background-color: #ecf0f1;"/>
+                    <Label text="* Campos obrigatórios" 
+                           style="-fx-text-fill: #95a5a6; -fx-font-size: 12px;"/>
+                </VBox>
+                
+            </VBox>
+        </ScrollPane>
+    </center>
+    
+</BorderPane>

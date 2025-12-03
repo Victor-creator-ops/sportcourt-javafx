@@ -45,6 +45,7 @@
                 <Button fx:id="btnProdutos" text="Produtos" onAction="#onProdutos" styleClass="menu-button" maxWidth="Infinity"/>
                 <Button fx:id="btnComandas" text="Comandas" onAction="#onComandas" styleClass="menu-button" maxWidth="Infinity"/>
                 <Button fx:id="btnFinanceiro" text="Financeiro" onAction="#onFinanceiro" styleClass="menu-button" maxWidth="Infinity"/>
+                <Button fx:id="btnMateriais" text="Materiais" onAction="#onMateriais" styleClass="menu-button" maxWidth="Infinity"/>
             </VBox>
             
             <Separator style="-fx-background-color: #4a6278; -fx-padding: 20 15;"/>

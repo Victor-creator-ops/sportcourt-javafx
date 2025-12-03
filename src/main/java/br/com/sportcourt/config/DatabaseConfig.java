@@ -8,7 +8,7 @@ public class DatabaseConfig {
 
     private static final String URL = "jdbc:mysql://localhost:3306/sportcourt_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "1234"; // ajuste se tiver senha
+    private static final String PASSWORD = "1234";
 
     private DatabaseConfig() {}
 
