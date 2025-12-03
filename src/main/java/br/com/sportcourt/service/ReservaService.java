@@ -10,6 +10,12 @@ public class ReservaService {
     private final ReservaDAO dao = new ReservaDAO();
 
     public void salvar(Reserva r) {
+        boolean conflito = dao.existeConflito(r.getQuadraId(), r.getData(), r.getHoraInicio(),
+                r.getHoraFim(), r.getId() == 0 ? null : r.getId());
+        if (conflito) {
+            throw new IllegalStateException("Quadra indisponível nesse horário para a data.");
+        }
+
         if (r.getId() == 0) {
             dao.create(r);
         } else {

@@ -140,6 +140,8 @@ public class ReservaFormController extends BaseController {
             showInfo("Reserva salva com sucesso!");
             fecharJanela();
 
+        } catch (IllegalStateException e) {
+            showWarning(e.getMessage());
         } catch (Exception e) {
             showError("Erro ao salvar reserva: " + e.getMessage());
             e.printStackTrace();

@@ -11,6 +11,39 @@ import java.util.List;
 
 public class ReservaDAO {
 
+    public boolean existeConflito(String quadraId, LocalDate data, LocalTime inicio,
+            LocalTime fim, Integer ignorarId) {
+        String sql = "SELECT COUNT(*) FROM reservas "
+                + "WHERE quadra_id = ? "
+                + "AND data = ? "
+                + "AND status <> 'CANCELADO' "
+                + "AND NOT (hora_fim <= ? OR hora_inicio >= ?) "
+                + (ignorarId != null ? "AND id <> ?" : "");
+
+        try (Connection conn = DatabaseConfig.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, quadraId);
+            stmt.setDate(2, Date.valueOf(data));
+            stmt.setTime(3, Time.valueOf(inicio));
+            stmt.setTime(4, Time.valueOf(fim));
+            if (ignorarId != null) {
+                stmt.setInt(5, ignorarId);
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao verificar disponibilidade: " + e.getMessage(), e);
+        }
+
+        return false;
+    }
+
     public void create(Reserva r) {
         String sql =
                 "INSERT INTO reservas (quadra_id, cliente_nome, data, hora_inicio, hora_fim, status) VALUES (?, ?, ?, ?, ?, ?)";
